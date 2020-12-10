@@ -1,0 +1,82 @@
+package sample;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+
+import java.math.BigDecimal;
+
+public class Controller {
+    @FXML
+    private TextField display;
+
+    private BigDecimal left;
+    private String selectedOperator;
+    private boolean numberInputting;
+    private double storedNumber;
+
+    @FXML
+    public void initialize() {
+        this.left = BigDecimal.ZERO;
+        this.selectedOperator = "";
+        this.numberInputting = false;
+    }
+
+    @FXML
+    public void operateButton(ActionEvent e) {
+        Button button = (Button) e.getSource();
+        String buttonText = button.getText();
+
+        if (buttonText.equals("C")) {
+            if (buttonText.equals("C")) {
+                left = BigDecimal.ZERO;
+            }
+            selectedOperator = "";
+            numberInputting = true;
+            display.setText("");
+            return;
+
+        } else if (buttonText.matches("[0-9\\.]")) {
+            if (!numberInputting) {
+                numberInputting = true;
+                display.clear();
+            }
+            display.appendText(buttonText);
+            storedNumber = Double.parseDouble(display.getText());
+            return;
+
+        } else if (buttonText.matches("[/*\\-+]")) {
+            left = new BigDecimal(storedNumber);
+            selectedOperator = buttonText;
+            numberInputting = false;
+            return;
+
+        } else if (buttonText.equals("=")) {
+            final BigDecimal right;
+            if (numberInputting) {
+                right = new BigDecimal(display.getText());
+            } else {
+                right = left;
+            }
+            left = calculate(selectedOperator, left, right);
+            display.setText(left.toString());
+            numberInputting = false;
+            return;
+        }
+    }
+
+    public static BigDecimal calculate(String operator, BigDecimal first, BigDecimal second) {
+        switch (operator) {
+            case "+":
+                return first.add(second);
+            case "-":
+                return first.subtract(second);
+            case "*":
+                return first.multiply(second);
+            case "/":
+                return first.divide(second);
+        }
+        return second;
+    }
+}
